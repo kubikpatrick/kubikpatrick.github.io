@@ -1,302 +1,411 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kubik Patrick - Développeur Backend .NET</title>
+    <title>Kubik Patrick | Développeur Fullstack .NET</title>
+    <meta name="description" content="Portfolio de Patrick Kubik, développeur Fullstack spécialisé en .NET, ASP.NET Core, Blazor et Azure.">
+    
+    <!-- Polices : Inter (Lecture) & JetBrains Mono (Code/Tech) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                     colors: {
-                        border: "hsl(214.3 31.8% 91.4%)",
-                        input: "hsl(214.3 31.8% 91.4%)",
-                        ring: "hsl(222.2 84% 4.9%)",
-                        background: "hsl(0 0% 100%)",
-                        foreground: "hsl(222.2 84% 4.9%)",
-                        primary: {
-                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
-                            foreground: "hsl(210 40% 98%)",
-                        },
-                        secondary: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(222.2 47.4% 11.2%)",
-                        },
-                        muted: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        dark: {
+                            900: '#0a0a0a',
+                            800: '#171717',
+                            700: '#262626',
                         },
                         accent: {
-                            DEFAULT: "hsl(210 40% 96.1%)",
-                            foreground: "hsl(222.2 47.4% 11.2%)",
-                        },
+                            DEFAULT: '#6366f1', // Indigo
+                            glow: '#818cf8',
+                        }
                     },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
                 }
             }
         }
     </script>
+    
     <style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Configuration de base */
+        body {
+            background-color: #0a0a0a;
+            min-height: 100vh;
+        }
+
+        /* La grille est déplacée dans un conteneur dédié pour ne pas affecter la navbar */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(to right, #262626 1px, transparent 1px),
+                linear-gradient(to bottom, #262626 1px, transparent 1px);
+            background-size: 4rem 4rem;
+            background-position: center top;
+            /* Masque pour l'effet de vignettage uniquement sur la grille */
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Overlay pour adoucir le fond */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 30px -10px rgba(99, 102, 241, 0.3);
         }
-        
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1; 
+        }
     </style>
 </head>
-<body class="bg-background text-foreground">
-    <!-- Navigation -->
-    <nav class="border-b border-border sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="text-xl font-semibold">PK</div>
-                <div class="flex gap-2">
-                    <a href="#contact" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                        Me contacter
-                    </a>
-                    <a href="https://github.com/kubikpatrick" target="_blank" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                        GitHub
+<body class="text-gray-300 antialiased selection:bg-accent selection:text-white relative">
+
+    <!-- Grille d'arrière-plan séparée -->
+    <div class="bg-grid"></div>
+    
+    <div class="bg-overlay"></div>
+
+    <!-- Navigation Minimaliste -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-white/20 shadow-2xl">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Nouveau Logo PK -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="h-10 w-10 rounded-xl bg-accent/20 flex items-center justify-center border border-accent/50 transition-transform group-hover:scale-105">
+                        <span class="font-mono font-bold text-xl text-accent">PK</span>
+                    </div>
+                    <span class="font-semibold text-lg tracking-tight text-white group-hover:text-accent transition-colors">Patrick Kubik</span>
+                </a>
+                
+                <div class="flex items-center gap-1 sm:gap-4">
+                    <a href="#projets" class="hidden sm:block px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">Projets</a>
+                    <a href="#skills" class="hidden sm:block px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">Stack</a>
+                    <a href="#contact" class="ml-2 bg-accent hover:bg-accent-glow text-white px-5 py-2.5 rounded-lg font-semibold transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 group">
+                        <span>Me contacter</span>
+                        <i data-lucide="message-square" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="container mx-auto px-4 py-24 md:py-32">
-        <div class="max-w-3xl">
-            <div class="inline-flex items-center rounded-full border border-border px-3 py-1 text-sm mb-6 animate-fade-in-up">
-                <span class="relative flex h-2 w-2 mr-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+    <main class="max-w-5xl mx-auto px-6 pt-32 pb-20">
+        
+        <!-- Hero Section -->
+        <!-- Réduction de mb-20 à mb-12 pour resserrer l'espace avec la section suivante -->
+        <section class="min-h-[70vh] flex flex-col justify-center items-start mb-12 relative">
+            <!-- État freelance -->
+            <div class="animate-slide-up opacity-0 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/10 text-green-400 text-xs font-mono mb-6">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                Disponible en freelance
+                Disponible pour missions
             </div>
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 animate-fade-in-up delay-100">
-                Kubik Patrick
+
+            <h1 class="animate-slide-up opacity-0 [animation-delay:100ms] text-5xl md:text-7xl font-bold text-white tracking-tight mb-6">
+                Architecte de solutions<br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Fullstack .NET</span>
             </h1>
-            <p class="text-xl md:text-2xl text-muted-foreground mb-4 animate-fade-in-up delay-200">
-                Développeur Backend .NET
+            
+            <p class="animate-slide-up opacity-0 [animation-delay:200ms] text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed mb-10">
+                Je ne me contente pas d'écrire du code. Je conçois des systèmes complets, du serveur à l'interface utilisateur. 
+                Spécialisé en <span class="text-white font-mono bg-white/5 px-1 rounded">C#</span>, <span class="text-white font-mono bg-white/5 px-1 rounded">Blazor</span> et <span class="text-white font-mono bg-white/5 px-1 rounded">Azure</span>, je transforme la complexité technique en expériences fluides.
             </p>
-            <p class="text-lg text-muted-foreground mb-8 max-w-2xl animate-fade-in-up delay-300">
-                Développeur backend spécialisé en .NET, je transforme vos idées en solutions techniques robustes et performantes. Axé sur les résultats, je livre des applications qui dépassent les attentes.
+
+            <div class="animate-slide-up opacity-0 [animation-delay:300ms] flex flex-wrap gap-4">
+                <a href="#projets" class="group flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                    Voir mes travaux
+                    <i data-lucide="arrow-down" class="w-4 h-4 group-hover:translate-y-1 transition-transform"></i>
+                </a>
+                <a href="https://github.com/kubikpatrick" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-lg font-medium border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all">
+                    <i data-lucide="github" class="w-4 h-4"></i>
+                    GitHub
+                </a>
+            </div>
+
+            <!-- Stats rapides (Ligne retirée) -->
+            <div class="animate-slide-up opacity-0 [animation-delay:500ms] grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 w-full">
+                <div>
+                    <div class="text-3xl font-mono font-bold text-white">4+</div>
+                    <div class="text-sm text-gray-500">Années d'exp.</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-mono font-bold text-white">100%</div>
+                    <div class="text-sm text-gray-500">Fullstack Focus</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-mono font-bold text-white">.NET 9</div>
+                    <div class="text-sm text-gray-500">Always up-to-date</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-mono font-bold text-white">Paris</div>
+                    <div class="text-sm text-gray-500">Basé à</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services (Grid Benta) -->
+        <section class="mb-32">
+            <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <span class="text-accent font-mono">01.</span> Expertise
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card p-6 rounded-2xl md:col-span-2 group">
+                    <div class="bg-accent/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-accent group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="layout" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Développement Fullstack</h3>
+                    <p class="text-gray-400">
+                        Création d'applications web modernes de bout en bout. APIs robustes avec ASP.NET Core couplées à des interfaces réactives en Blazor ou JavaScript.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="bg-blue-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-blue-400 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="cloud" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Cloud Azure</h3>
+                    <p class="text-gray-400">
+                        Déploiement et gestion de ressources Cloud. Azure Functions, App Service, SQL Database.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="bg-pink-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-pink-400 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="smartphone" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Cross-Platform</h3>
+                    <p class="text-gray-400">
+                        Développement d'applications mobiles natives avec .NET MAUI.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl md:col-span-2 group">
+                    <div class="bg-green-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-green-400 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="database" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Data & Performance</h3>
+                    <p class="text-gray-400">
+                        Optimisation de requêtes SQL Server, Entity Framework Core, mise en cache (Redis) et gestion de données complexes.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stack Technique -->
+        <section id="skills" class="mb-32 scroll-mt-32">
+            <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <span class="text-accent font-mono">02.</span> Stack Technique
+            </h2>
+            
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent blur-xl -z-10"></div>
+                <div class="border border-white/10 rounded-xl p-8 bg-black/40 backdrop-blur-sm">
+                    <div class="grid gap-8">
+                        <div>
+                            <h3 class="text-sm font-mono text-gray-500 uppercase tracking-wider mb-4">Core</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default text-indigo-300">C# 12</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">.NET 8/9</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">ASP.NET Core</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Entity Framework</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-mono text-gray-500 uppercase tracking-wider mb-4">Infrastructure & Tools</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Azure</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Docker</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">SQL Server</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Redis</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Git</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">CI/CD</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-sm font-mono text-gray-500 uppercase tracking-wider mb-4">Autres</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">.NET MAUI</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">SignalR</span>
+                                <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-sm hover:bg-white/10 hover:border-accent/50 transition-colors cursor-default">Blazor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section id="projets" class="mb-32 scroll-mt-32">
+            <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <span class="text-accent font-mono">03.</span> Sélection de Projets
+            </h2>
+
+            <div class="space-y-12">
+                <!-- Projet 1 -->
+                <article class="glass-card rounded-2xl overflow-hidden hover:border-accent/50 transition-colors group">
+                    <div class="grid md:grid-cols-5 gap-6">
+                        <div class="md:col-span-2 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-8 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                            <i data-lucide="map-pin" class="w-16 h-16 text-indigo-300 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                        <div class="md:col-span-3 p-6 md:py-8 md:pr-8 flex flex-col justify-center">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-2xl font-bold text-white">Pariqas</h3>
+                                <a href="https://github.com/kubikpatrick/Pariqas" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                                    <i data-lucide="github" class="w-5 h-5"></i>
+                                </a>
+                            </div>
+                            <p class="text-gray-400 mb-6 leading-relaxed">
+                                Solution auto-hébergée de géolocalisation temps réel. Une alternative privée à Life360.
+                                Conçu avec une architecture distribuée robuste capable de gérer des milliers de mises à jour de position.
+                            </p>
+                            <div class="flex flex-wrap gap-3 mt-auto">
+                                <span class="text-xs font-mono text-indigo-400">ASP.NET Core</span>
+                                <span class="text-xs font-mono text-indigo-400">SignalR</span>
+                                <span class="text-xs font-mono text-indigo-400">SQL Server</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Projet 2 -->
+                <article class="glass-card rounded-2xl overflow-hidden hover:border-pink-500/50 transition-colors group">
+                    <div class="grid md:grid-cols-5 gap-6">
+                        <div class="md:col-span-2 bg-gradient-to-br from-pink-900/50 to-rose-900/50 p-8 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                            <i data-lucide="film" class="w-16 h-16 text-pink-300 group-hover:scale-110 transition-transform duration-500"></i>
+                        </div>
+                        <div class="md:col-span-3 p-6 md:py-8 md:pr-8 flex flex-col justify-center">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-2xl font-bold text-white">Mei</h3>
+                                <a href="https://github.com/kubikpatrick" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                                    <i data-lucide="github" class="w-5 h-5"></i>
+                                </a>
+                            </div>
+                            <p class="text-gray-400 mb-6 leading-relaxed">
+                                Plateforme de streaming auto-hébergée (type Plex). Gestion complexe de métadonnées, transcodage à la volée et streaming adaptatif. 
+                                Une démonstration de performance et de gestion de fichiers lourds.
+                            </p>
+                            <div class="flex flex-wrap gap-3 mt-auto">
+                                <span class="text-xs font-mono text-pink-400">.NET Core</span>
+                                <span class="text-xs font-mono text-pink-400">FFmpeg</span>
+                                <span class="text-xs font-mono text-pink-400">Entity Framework</span>
+                                <span class="text-xs font-mono text-pink-400">Streaming</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <!-- Réduction de mb-32 à mb-12 -->
+        <section id="contact" class="max-w-2xl mx-auto text-center mb-12 pt-20 scroll-mt-32">
+            <h2 class="text-4xl font-bold text-white mb-6">Prêt à collaborer ?</h2>
+            <p class="text-gray-400 mb-10 text-lg">
+                Je suis actuellement ouvert aux nouvelles opportunités en freelance ou CDI. 
+                Que vous ayez une question ou juste envie de dire bonjour, ma boîte de réception est ouverte.
             </p>
-            <div class="flex items-center gap-4 text-sm text-muted-foreground animate-fade-in-up delay-300">
-                <span class="flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    Paris
-                </span>
-            </div>
-        </div>
-    </section>
+            
+            <a href="mailto:patrick.kubik@outlook.com" class="inline-flex items-center gap-3 bg-accent hover:bg-accent-glow text-white px-8 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-indigo-500/25">
+                <i data-lucide="mail" class="w-5 h-5"></i>
+                patrick.kubik@outlook.com
+            </a>
 
-    <!-- Services Section -->
-    <section class="border-t border-border py-24 bg-muted/50">
-        <div class="container mx-auto px-4">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Services</h2>
-                <p class="text-muted-foreground">Ce que je peux faire pour vous</p>
+            <div class="flex justify-center gap-6 mt-12">
+                <a href="https://linkedin.com/in/kubikpatrick" target="_blank" class="text-gray-500 hover:text-white transition-colors">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+                <a href="https://github.com/kubikpatrick" target="_blank" class="text-gray-500 hover:text-white transition-colors">
+                    <i data-lucide="github" class="w-6 h-6"></i>
+                </a>
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Service Card 1 -->
-                <div class="rounded-lg border border-border bg-background p-6 hover:shadow-lg transition-shadow">
-                    <div class="mb-4 text-4xl">🌐</div>
-                    <h3 class="font-semibold mb-2">Développement Web</h3>
-                    <p class="text-sm text-muted-foreground">Applications web performantes avec ASP.NET Core et architectures modernes</p>
-                </div>
-                
-                <!-- Service Card 2 -->
-                <div class="rounded-lg border border-border bg-background p-6 hover:shadow-lg transition-shadow">
-                    <div class="mb-4 text-4xl">⚡</div>
-                    <h3 class="font-semibold mb-2">API REST</h3>
-                    <p class="text-sm text-muted-foreground">Conception et développement d'APIs scalables et sécurisées</p>
-                </div>
-                
-                <!-- Service Card 3 -->
-                <div class="rounded-lg border border-border bg-background p-6 hover:shadow-lg transition-shadow">
-                    <div class="mb-4 text-4xl">💼</div>
-                    <h3 class="font-semibold mb-2">Applications Métier</h3>
-                    <p class="text-sm text-muted-foreground">Solutions sur mesure pour automatiser vos processus business</p>
-                </div>
-                
-                <!-- Service Card 4 -->
-                <div class="rounded-lg border border-border bg-background p-6 hover:shadow-lg transition-shadow">
-                    <div class="mb-4 text-4xl">📱</div>
-                    <h3 class="font-semibold mb-2">Développement Mobile</h3>
-                    <p class="text-sm text-muted-foreground">Applications cross-platform avec .NET MAUI</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Projects Section -->
-    <section class="py-24">
-        <div class="container mx-auto px-4">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Projets phares</h2>
-                <p class="text-muted-foreground">Mes réalisations récentes</p>
-            </div>
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Project 1 -->
-                <div class="rounded-lg border border-border bg-background overflow-hidden hover:shadow-lg transition-shadow">
-                    <div class="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-6xl">
-                        📍
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">Pariqas</h3>
-                        <p class="text-muted-foreground mb-4">
-                            Solution auto-hébergée de géolocalisation en temps réel pour suivre vos proches et appareils. Architecture distribuée avec mise à jour live et interface intuitive.
-                        </p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">ASP.NET Core</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">SignalR</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">SQL Server</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">Azure</span>
-                        </div>
-                        <a href="https://github.com/kubikpatrick/Pariqas" target="_blank" class="inline-flex items-center text-sm font-medium hover:underline">
-                            Voir sur GitHub
-                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+    </main>
 
-                <!-- Project 2 -->
-                <div class="rounded-lg border border-border bg-background overflow-hidden hover:shadow-lg transition-shadow">
-                    <div class="h-48 bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center text-6xl">
-                        🎬
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">Mei</h3>
-                        <p class="text-muted-foreground mb-4">
-                            Plateforme d'hébergement et de streaming de films auto-hébergée. Une alternative open-source à Plex avec gestion complète de bibliothèque multimédia.
-                        </p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">.NET Core</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">Entity Framework</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">Streaming</span>
-                            <span class="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">Self-hosted</span>
-                        </div>
-                        <a href="https://github.com/kubikpatrick" target="_blank" class="inline-flex items-center text-sm font-medium hover:underline">
-                            Voir sur GitHub
-                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section class="border-t border-border py-24 bg-muted/50">
-        <div class="container mx-auto px-4">
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold tracking-tight mb-2">Stack technique</h2>
-                <p class="text-muted-foreground">Technologies que je maîtrise</p>
-            </div>
-            <div class="flex flex-wrap gap-3 max-w-4xl">
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">C#</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">ASP.NET Core</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">Entity Framework</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">.NET MAUI</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">Azure</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">SQL Server</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">REST API</span>
-                <span class="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">Git</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="py-24" id="contact">
-        <div class="container mx-auto px-4">
-            <div class="max-w-3xl mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Prêt à démarrer un projet ?</h2>
-                <p class="text-lg text-muted-foreground mb-8">
-                    Discutons de comment je peux vous aider à concrétiser vos idées
-                </p>
-                <div class="rounded-lg border border-border bg-muted/50 p-8">
-                    <div class="space-y-4">
-                        <a href="mailto:patrick.kubik@outlook.com" class="flex items-center justify-between p-4 rounded-md border border-border bg-background hover:bg-accent transition-colors group">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <div class="font-medium">Email</div>
-                                    <div class="text-sm text-muted-foreground">patrick.kubik@outlook.com</div>
-                                </div>
-                            </div>
-                            <svg class="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                        
-                        <a href="https://linkedin.com/in/kubikpatrick" target="_blank" class="flex items-center justify-between p-4 rounded-md border border-border bg-background hover:bg-accent transition-colors group">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <div class="font-medium">LinkedIn</div>
-                                    <div class="text-sm text-muted-foreground">linkedin.com/in/kubikpatrick</div>
-                                </div>
-                            </div>
-                            <svg class="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                        
-                        <a href="https://github.com/kubikpatrick" target="_blank" class="flex items-center justify-between p-4 rounded-md border border-border bg-background hover:bg-accent transition-colors group">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <div class="font-medium">GitHub</div>
-                                    <div class="text-sm text-muted-foreground">github.com/kubikpatrick</div>
-                                </div>
-                            </div>
-                            <svg class="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-border py-8">
-        <div class="container mx-auto px-4 text-center text-sm text-muted-foreground">
-            <p>© 2024 Kubik Patrick • Développeur Backend .NET • Paris</p>
-        </div>
+    <footer class="border-t border-white/5 py-8 text-center text-sm text-gray-600 font-mono">
+        <p>Conçu & Développé par Kubik Patrick</p>
+        <p class="mt-2 text-xs">Built with .NET philosophy in mind</p>
     </footer>
+
+    <!-- Init Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
